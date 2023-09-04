@@ -20,7 +20,7 @@ public class CarMovement : MonoBehaviour
         CarBody = this.GetComponent<Rigidbody>();
 
         RandomizeCarColor();
-        InvokeRepeating("RandomMovement", 0f, .5f);
+        //InvokeRepeating("RandomMovement", 0f, .5f);
 
 
     }
@@ -87,17 +87,20 @@ public class CarMovement : MonoBehaviour
     public void UpdateRotation(float RotationInput)
     {
         float CarRotation = RotationInput * RotationSpeed * Time.deltaTime;
-        Quaternion rotation = new Quaternion(0f, CarRotation, 0f, 1);
-        CarBody.MoveRotation(CarBody.rotation * rotation);
+        Quaternion rotation = Quaternion.Euler(0f, CarRotation, 0f); // Create a quaternion from Euler angles
+        CarBody.MoveRotation(CarBody.rotation * rotation.normalized); // Normalize the quaternion before applying it
     }
+
 
     public void TurnLeft()
     {
+        Debug.Log("LEFT");
         HorizontalInput = -1;
     }
 
     public void TurnRight()
     {
+        Debug.Log("RIGHT");
         HorizontalInput = 1;
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class CarSensors : MonoBehaviour
 {
     public RaycastData[] rays; // Array of raycast data
+    public double[] distances;   // Array to store distances from hit objects
 
     [System.Serializable]
     public class RaycastData
@@ -14,10 +15,17 @@ public class CarSensors : MonoBehaviour
         public LayerMask collisionMask; // Layer mask to filter collisions
     }
 
+    private void Start()
+    {
+        distances = new double[rays.Length]; // Initialize the distances array
+    }
+
     private void Update()
     {
-        foreach (RaycastData rayData in rays)
+        for (int i = 0; i < rays.Length; i++)
         {
+            RaycastData rayData = rays[i];
+
             // Calculate the direction of the ray based on the angle
             Vector3 rayDirection = Quaternion.Euler(0, rayData.angle, 0) * transform.forward;
 
@@ -25,13 +33,18 @@ public class CarSensors : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, rayDirection, out hit, rayData.rayLength, rayData.collisionMask))
             {
-                // A collision occurred, do something with the hit information
+                // Store the hit distance in the distances array
+                distances[i] = hit.distance;
+
+                // Do something with the hit information
                 Debug.DrawLine(transform.position, hit.point, Color.red);
-                Debug.Log("Ray hit at angle " + rayData.angle + ": " + hit.collider.gameObject.name);
             }
             else
             {
-                // No collision, draw a debug line to visualize the ray
+                // No collision, store distance as ray length
+                distances[i] = rayData.rayLength;
+
+                // Draw a debug line to visualize the ray
                 Debug.DrawRay(transform.position, rayDirection * rayData.rayLength, Color.green);
             }
         }
